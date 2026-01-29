@@ -39,3 +39,19 @@ color:white;
 border:1px solid #334155;
 padding:4px;
 }
+
+tr.buy {
+  background: rgba(34,197,94,0.25);
+}
+
+tr.tp {
+  background: rgba(59,130,246,0.25);
+}
+
+tr.sl {
+  background: rgba(239,68,68,0.25);
+}
+
+tr.wait {
+  background: rgba(148,163,184,0.15);
+}
