@@ -45,8 +45,8 @@ tr.innerHTML=`
 <td class="status">🫷</td>
 <td><input class="entry" type="number" value="${entry}"></td>
 <td class="tp">-</td>
-<td class="sl">-</td>
-<td><input class="note" value="${note}"></td>
+<td class="sl">-</td><td><input class="note" value="${note}"></td>
+<td><button class="delBtn">✖</button></td>
 `;
 rows.appendChild(tr);
 }
@@ -202,9 +202,9 @@ async function scanLowStocks(){
 
   const rockets = data.filter(d=>{
     const pct = d.regularMarketChangePercent;
-    return d.regularMarketPrice <= 300 &&
-           pct >= 2 &&
-           d.regularMarketVolume > 1000000;
+   return Number(d.regularMarketPrice) <= 300 &&
+       pct >= 2 &&
+       Number(d.regularMarketVolume) > 1000000;
   });
 
   if(rockets.length===0){
@@ -249,3 +249,21 @@ function insertSymbolToBoard(symbol){
     alert("空き行がありません");
   }
 }
+document.addEventListener("click", (e)=>{
+
+  if(!e.target.classList.contains("delBtn")) return;
+
+  const row = e.target.closest("tr");
+
+  row.querySelector(".symbol").value="";
+  row.querySelector(".entry").value="";
+  row.querySelector(".note").value="";
+
+  row.querySelector(".price").textContent="-";
+  row.querySelector(".change").textContent="-";
+  row.querySelector(".status").textContent="🫷";
+  row.querySelector(".tp").textContent="-";
+  row.querySelector(".sl").textContent="-";
+
+  row.className="";
+});
