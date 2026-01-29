@@ -1,3 +1,4 @@
+let COMPANY_MASTER = {};
 /* ===========================
    PASSWORD LOCK
 =========================== */
@@ -52,6 +53,9 @@ const scanStatus = document.getElementById("scanStatus");
 const API_KEY = "9da2719fc4mshd3a78b9ad23f661p120cb6jsn71fe0d28e188";
 const API_HOST = "yahoo-finance-real-time1.p.rapidapi.com";
 
+fetch("./company_master.json")
+  .then(res => res.json())
+  .then(json => COMPANY_MASTER = json);
 
 /* ===========================
    LOW PRICE LIST
@@ -462,7 +466,10 @@ if(!Array.isArray(data)) return;
         : "-";
 
     row.querySelector(".name").textContent =
-      d.shortName || "-";
+  COMPANY_MASTER[d.symbol] ||
+  d.longName ||
+  d.shortName ||
+  "-";
 
     const pct=d.regularMarketChangePercent;
     row.className="";
