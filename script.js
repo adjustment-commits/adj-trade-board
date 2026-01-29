@@ -296,8 +296,8 @@ scanBtn.onclick = async ()=>{
   // ★が多い順に並べ替え
   candidates.sort((a,b)=>b.score - a.score);
 
-  // 上位20件だけ
-  const top20 = candidates.slice(0,20);
+  // 上位10件だけ
+  const top20 = candidates.slice(0,10);
 
   // ボードへ自動転送
   top20.forEach(c=>{
