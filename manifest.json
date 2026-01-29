@@ -1,0 +1,24 @@
+{
+"name": "ADJ Stock Screener",
+"short_name": "Screener",
+"description": "候補抽出・BUY/TP/SL判定（売買はMarket Speed/iSPEEDで）",
+"start_url": "./index.html",
+"scope": "./",
+"display": "standalone",
+"background_color": "#0d1117",
+"theme_color": "#0d1117",
+"icons": [
+{
+"src": "./icons/icon.svg",
+"sizes": "any",
+"type": "image/svg+xml",
+"purpose": "any"
+},
+{
+"src": "./icons/maskable.svg",
+"sizes": "any",
+"type": "image/svg+xml",
+"purpose": "maskable"
+}
+]
+}
