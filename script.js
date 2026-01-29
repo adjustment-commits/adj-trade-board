@@ -99,9 +99,13 @@ const row=input.closest("tr");
 const d=data.find(x=>x.symbol===input.value.trim().toUpperCase());
 if(!d) return;
 
-row.querySelector(".price").textContent=d.regularMarketPrice.toFixed(2);
-row.querySelector(".change").textContent=
-d.regularMarketChangePercent.toFixed(2)+"%";
+row.querySelector(".price").textContent =
+  d.regularMarketPrice ? d.regularMarketPrice.toFixed(2) : "-";
+
+row.querySelector(".change").textContent =
+  d.regularMarketChangePercent !== undefined
+    ? d.regularMarketChangePercent.toFixed(2)+"%"
+    : "-";
 row.querySelector(".name").textContent=d.shortName||"-";
 
 const pct=d.regularMarketChangePercent;
@@ -127,12 +131,7 @@ row.querySelector(".diff").textContent="-";
 });
 
 // 保存
-localStorage.setItem(STORAGE_KEY,
-JSON.stringify([...document.querySelectorAll("#rows tr")].map(tr=>({
-symbol:tr.querySelector(".symbol").value,
-entry:tr.querySelector(".entry").value,
-note:tr.querySelector(".note").value
-}))));
+saveBoard();
 }
 
 /* ---------- 自動更新 ---------- */
@@ -183,6 +182,18 @@ scannerList.appendChild(div);
 
 scanBtn.onclick=scanLowStocks;
 
+function saveBoard(){
+
+  const saveData = [...document.querySelectorAll("#rows tr")]
+    .map(tr => ({
+      symbol: tr.querySelector(".symbol").value,
+      entry:  tr.querySelector(".entry").value,
+      note:   tr.querySelector(".note").value
+    }));
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+}
+
 /* ---------- 表へ転記 ---------- */
 function insertSymbolToBoard(symbol){
 const inputs=[...document.querySelectorAll(".symbol")];
@@ -194,10 +205,28 @@ else alert("空き行なし");
 }
 
 /* ---------- 削除 ---------- */
-document.addEventListener("click",e=>{
-if(!e.target.classList.contains("delBtn")) return;
-const row=e.target.closest("tr");
-row.querySelectorAll("input").forEach(i=>i.value="");
-row.querySelectorAll("td").forEach(td=>td.textContent="-");
-row.className="";
+document.addEventListener("click",(e)=>{
+
+  if(!e.target.classList.contains("delBtn")) return;
+
+  const row = e.target.closest("tr");
+
+  // 入力欄
+  row.querySelector(".symbol").value = "";
+  row.querySelector(".entry").value  = "";
+  row.querySelector(".note").value   = "";
+
+  // 表示セル
+  row.querySelector(".name").textContent   = "-";
+  row.querySelector(".price").textContent  = "-";
+  row.querySelector(".change").textContent = "-";
+  row.querySelector(".status").textContent = "🫷";
+  row.querySelector(".tp").textContent     = "-";
+  row.querySelector(".sl").textContent     = "-";
+
+  // クラスと履歴
+  row.className = "";
+  row.dataset.prevStatus = "";
+
+  saveBoard();   // ← 即保存
 });
