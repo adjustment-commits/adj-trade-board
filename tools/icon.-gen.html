@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Icon Generator</title>
+  <style>
+    body{
+      margin:0; padding:16px;
+      font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:#0d1117; color:#e5e7eb;
+    }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    button{
+      border:1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.08);
+      color:#e5e7eb;
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:800;
+    }
+    button:hover{ background: rgba(255,255,255,.12); }
+    .box{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      padding:12px;
+      background: rgba(255,255,255,.04);
+    }
+    input{
+      width:100%;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.30);
+      color:#e5e7eb;
+      padding:10px;
+      font-size:14px;
+    }
+    canvas{ width:160px; height:160px; border-radius:22px; border:1px solid rgba(255,255,255,.12); background:#0d1117; }
+    .hint{ color:#94a3b8; font-size:12px; line-height:1.45; margin-top:8px; }
+    a{ color:#93c5fd; }
+  </style>
+</head>
+<body>
+  <h1 style="margin:0 0 10px; font-size:18px;">iOS用PNGアイコン生成（192/512）</h1>
+  <div class="box">
+    <div class="row">
+      <div style="flex:1; min-width:240px;">
+        <label style="font-size:12px; color:#94a3b8;">中央文字</label>
+        <input id="text" value="整" />
+      </div>
+      <div style="flex:1; min-width:240px;">
+        <label style="font-size:12px; color:#94a3b8;">下段文字</label>
+        <input id="sub" value="SCREENER" />
+      </div>
+    </div>
+<div class="row" style="margin-top:12px;">
+  <canvas id="c192" width="192" height="192"></canvas>
+  <canvas id="c512" width="512" height="512"></canvas>
+</div>
+
+<div class="row" style="margin-top:12px;">
+  <button id="btnDraw">描画</button>
+  <button id="btnSave192">icon-192.png 保存</button>
+  <button id="btnSave512">icon-512.png 保存</button>
+</div>
+
+<div class="hint">
+  生成したPNGを <b>/icons/icon-192.png</b> と <b>/icons/icon-512.png</b> に置くと、iOSのホーム追加アイコンが安定する。<br/>
+  iPad/iPhoneで保存できない場合は、MacのSafariで開いて保存してGitHubに配置。
+</div>
+  </div>
+  <script>
+    const c192 = document.getElementById("c192");
+    const c512 = document.getElementById("c512");
+    const t = document.getElementById("text");
+    const s = document.getElementById("sub");
+
+    function drawOne(canvas, size){
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0,0,size,size);
+
+      // bg
+      ctx.fillStyle = "#0d1117";
+      roundRect(ctx, size*0.06, size*0.06, size*0.88, size*0.88, size*0.22);
+      ctx.fill();
+
+      // gradient overlay
+      const g = ctx.createLinearGradient(0, size*0.06, 0, size*0.94);
+      g.addColorStop(0, "rgba(96,165,250,0.35)");
+      g.addColorStop(1, "rgba(34,197,94,0.20)");
+      ctx.fillStyle = g;
+      roundRect(ctx, size*0.10, size*0.10, size*0.80, size*0.80, size*0.20);
+      ctx.fill();
+
+      // border
+      ctx.strokeStyle = "rgba(255,255,255,0.14)";
+      ctx.lineWidth = Math.max(2, size*0.012);
+      roundRect(ctx, size*0.06, size*0.06, size*0.88, size*0.88, size*0.22);
+      ctx.stroke();
+
+      // main text
+      ctx.fillStyle = "#e5e7eb";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = `900 ${Math.floor(size*0.46)}px system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif`;
+      ctx.fillText(t.value || "整", size*0.5, size*0.52);
+
+      // sub
+      ctx.fillStyle = "rgba(229,231,235,0.92)";
+      ctx.font = `800 ${Math.floor(size*0.08)}px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace`;
+      ctx.fillText(s.value || "SCREENER", size*0.5, size*0.78);
+    }
+
+    function roundRect(ctx, x, y, w, h, r){
+      const rr = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x+rr, y);
+      ctx.arcTo(x+w, y, x+w, y+h, rr);
+      ctx.arcTo(x+w, y+h, x, y+h, rr);
+      ctx.arcTo(x, y+h, x, y, rr);
+      ctx.arcTo(x, y, x+w, y, rr);
+      ctx.closePath();
+    }
+
+    function save(canvas, filename){
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }, "image/png");
+    }
+
+    document.getElementById("btnDraw").addEventListener("click", () => {
+      drawOne(c192, 192);
+      drawOne(c512, 512);
+    });
+    document.getElementById("btnSave192").addEventListener("click", () => save(c192, "icon-192.png"));
+    document.getElementById("btnSave512").addEventListener("click", () => save(c512, "icon-512.png"));
+
+    // init
+    drawOne(c192, 192);
+    drawOne(c512, 512);
+  </script>
+</body>
+</html>
