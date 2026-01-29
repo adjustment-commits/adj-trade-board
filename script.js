@@ -256,12 +256,14 @@ if(d.spike>=3) s++;
 =========================== */
 
 const scanBtn=document.getElementById("scanBtn");
+const SCAN_RESULT_MODE = "TOP20";
 
 scanBtn.onclick = async ()=>{
+clearBoard();
 
   const quotes = await fetchQuotes(LOW_PRICE_LIST);
 
-  let candidates = [];
+  const candidates = [];
 
   for(const d of quotes){
 
@@ -285,22 +287,35 @@ scanBtn.onclick = async ()=>{
     if(scanMode==="short" && avgCandle<1.2) continue;
 
     const stars = calcStars(d, avgCandle);
-    const score = stars.length;   // ★の数を数値化
 
     candidates.push({
       symbol: d.symbol,
-      score: score
+      score: stars.length
     });
   }
 
-  // ★が多い順に並べ替え
+  // ★多い順
   candidates.sort((a,b)=>b.score - a.score);
 
-  // 上位20件だけ
-  const top20 = candidates.slice(0,20);
+  let result = [];
 
-  // ボードへ自動転送
-  top20.forEach(c=>{
+  if(SCAN_RESULT_MODE==="TOP10"){
+    result = candidates.slice(0,10);
+  }
+
+  if(SCAN_RESULT_MODE==="TOP20"){
+    result = candidates.slice(0,20);
+  }
+
+  if(SCAN_RESULT_MODE==="TOP30"){
+    result = candidates.slice(0,30);
+  }
+
+  if(SCAN_RESULT_MODE==="STAR4"){
+    result = candidates.filter(c=>c.score>=4);
+  }
+
+  result.forEach(c=>{
     insertSymbolToBoard(c.symbol);
   });
 
@@ -438,6 +453,12 @@ note:tr.querySelector(".note").value
 localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
 }
 
+function clearBoard(){
+  document.querySelectorAll(".symbol").forEach(i=>i.value="");
+  document.querySelectorAll(".entry").forEach(i=>i.value="");
+  document.querySelectorAll(".note").forEach(i=>i.value="");
+  saveBoard();
+}
 
 /* ===========================
    DELETE
