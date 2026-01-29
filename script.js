@@ -26,8 +26,26 @@ let timer=null;
 let scanMode="short";
 
 /* ---------- モード切替 ---------- */
-document.getElementById("modeShort").onclick=()=>scanMode="short";
-document.getElementById("modeLong").onclick=()=>scanMode="long";
+const modeLabel = document.getElementById("scanModeLabel");
+const modeShortBtn = document.getElementById("modeShort");
+const modeLongBtn  = document.getElementById("modeLong");
+
+function setMode(mode){
+  scanMode = mode;
+
+  modeLabel.textContent = "MODE : " + mode.toUpperCase();
+
+  modeShortBtn.classList.remove("active");
+  modeLongBtn.classList.remove("active");
+
+  if(mode==="short") modeShortBtn.classList.add("active");
+  if(mode==="long")  modeLongBtn.classList.add("active");
+}
+
+modeShortBtn.onclick = ()=>setMode("short");
+modeLongBtn.onclick  = ()=>setMode("long");
+
+setMode("short"); // 初期
 
 /* ---------- ★評価 ---------- */
 function calcStars(d){
