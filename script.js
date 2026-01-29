@@ -463,3 +463,5 @@ row.querySelector(".diff").textContent="-";
 row.className="";
 saveBoard();
 });
+
+console.log("JS READY");
