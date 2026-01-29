@@ -454,9 +454,24 @@ localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
 }
 
 function clearBoard(){
-  document.querySelectorAll(".symbol").forEach(i=>i.value="");
-  document.querySelectorAll(".entry").forEach(i=>i.value="");
-  document.querySelectorAll(".note").forEach(i=>i.value="");
+
+  document.querySelectorAll("#rows tr").forEach(row=>{
+
+    row.querySelector(".symbol").value = "";
+    row.querySelector(".entry").value  = "";
+    row.querySelector(".note").value   = "";
+
+    row.querySelector(".name").textContent   = "-";
+    row.querySelector(".price").textContent  = "-";
+    row.querySelector(".change").textContent = "-";
+    row.querySelector(".status").textContent = "🫷";
+    row.querySelector(".tp").textContent     = "-";
+    row.querySelector(".sl").textContent     = "-";
+    row.querySelector(".diff").textContent   = "-";
+
+    row.className = "";
+  });
+
   saveBoard();
 }
 
