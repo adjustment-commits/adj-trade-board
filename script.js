@@ -1,3 +1,6 @@
+document.addEventListener("DOMContentLoaded", ()=>{
+
+
 /* ===========================
    PASSWORD LOCK
 =========================== */
@@ -463,3 +466,5 @@ row.querySelector(".diff").textContent="-";
 row.className="";
 saveBoard();
 });
+
+}); // DOMContentLoaded end
