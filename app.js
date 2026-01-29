@@ -48,27 +48,32 @@ function ema(values, period){
 
 /* ---------- Yahoo Finance ---------- */
 async function fetchQuotes(symbols){
-  const url = `https://${RAPID_API_HOST}/market/v2/get-quotes?region=JP&symbols=${symbols.join(",")}`;
+  try{
+    const url = `https://${RAPID_API_HOST}/market/v2/get-quotes?region=JP&symbols=${symbols.join(",")}`;
 
-  const res = await fetch(url,{
-    headers:{
-      "x-rapidapi-key": RAPID_API_KEY,
-      "x-rapidapi-host": RAPID_API_HOST
+    const res = await fetch(url,{
+      headers:{
+        "x-rapidapi-key": RAPID_API_KEY,
+        "x-rapidapi-host": RAPID_API_HOST
+      }
+    });
+
+    const json = await res.json();
+
+    if(!json.quoteResponse || !json.quoteResponse.result){
+      return [];
     }
-  });
 
- const json = await res.json();
-
-if(!json.quoteResponse || !json.quoteResponse.result){
-  return [];
-}
-
-return json.quoteResponse.result.map(r=>({
-    symbol: r.symbol,
-    price: r.regularMarketPrice,
-    changePct: r.regularMarketChangePercent,
-    volume: r.regularMarketVolume
-  }));
+    return json.quoteResponse.result.map(r=>({
+      symbol: r.symbol,
+      price: r.regularMarketPrice,
+      changePct: r.regularMarketChangePercent,
+      volume: r.regularMarketVolume
+    }));
+  }catch(e){
+    setStatus("API取得エラー");
+    return [];
+  }
 }
 
 /* ---------- Logic ---------- */
