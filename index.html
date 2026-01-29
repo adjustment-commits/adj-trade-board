@@ -11,28 +11,43 @@
 <header>
 <h1>ADJ Trade Board</h1>
 <div class="controls">
-<button id="refreshBtn">更新</button>
-<button id="autoBtn">自動更新 OFF</button>
+<div id="app">
+
+  <!-- 🚀候補スキャナー -->
+  <div id="scannerPanel">
+    <h2>🚀 候補スキャナー</h2>
+    <button id="scanBtn">スキャン</button>
+    <div id="scannerList"></div>
+  </div>
+
+  <!-- 監視ボード -->
+  <div id="boardPanel">
+
+    <button id="refreshBtn">更新</button>
+    <button id="autoBtn">自動更新</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>銘柄</th>
+          <th>企業名</th>
+          <th>価格</th>
+          <th>前日比</th>
+          <th>状態</th>
+          <th>Entry</th>
+          <th>TP</th>
+          <th>SL</th>
+          <th>備考</th>
+        </tr>
+      </thead>
+
+      <tbody id="rows"></tbody>
+    </table>
+
+  </div>
+
 </div>
-</header>
 
-<table>
-<thead>
-<tr>
-<th>銘柄</th>
-<th>企業名</th>
-<th>現在値</th>
-<th>前日比%</th>
-<th>状態</th>
-<th>エントリー</th>
-<th>TP</th>
-<th>SL</th>
-<th>備考</th>
-</tr>
-</thead>
-<tbody id="rows"></tbody>
-</table>
-
-<script src="app.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
