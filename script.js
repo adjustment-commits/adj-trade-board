@@ -224,7 +224,6 @@ const scanBtn=document.getElementById("scanBtn");
 const SCAN_RESULT_MODE = "TOP20";
 
 scanBtn.onclick = async ()=>{
-clearBoard();
 
   const quotes = await fetchQuotes(LOW_PRICE_LIST);
 
