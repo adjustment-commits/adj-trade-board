@@ -227,3 +227,25 @@ rockets.forEach(d=>{
 }
 
 scanBtn.onclick = scanLowStocks;
+
+
+/* ---------- 🚀→表へ転記 ---------- */
+function insertSymbolToBoard(symbol){
+
+  const inputs = [...document.querySelectorAll(".symbol")];
+
+  // すでに存在していたら何もしない
+  if(inputs.some(i => i.value === symbol)){
+    return;
+  }
+
+  // 空行を探す
+  const empty = inputs.find(i => i.value.trim() === "");
+
+  if(empty){
+    empty.value = symbol;
+    refresh();   // 即更新
+  }else{
+    alert("空き行がありません");
+  }
+}
