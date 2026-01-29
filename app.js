@@ -1,6 +1,5 @@
 const API_KEY = "9da2719fc4mshd3a78b9ad23f661p120cb6jsn71fe0d28e188";
 const API_HOST = "yahoo-finance-real-time1.p.rapidapi.com";
-
 const refreshBtn = document.getElementById("refreshBtn");
 const autoBtn = document.getElementById("autoBtn");
 const rows = document.getElementById("rows");
