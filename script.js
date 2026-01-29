@@ -216,7 +216,11 @@ async function scanLowStocks(){
 rockets.forEach(d=>{
   const div=document.createElement("div");
   div.className="scanItem";
-  div.textContent=`${d.symbol}  ${d.shortName || ""}  🚀`;
+div.innerHTML = `
+<div class="scanSymbol">${d.symbol}</div>
+<div class="scanName">${d.shortName || ""}</div>
+<div class="scanRocket">🚀</div>
+`;
 
   // ★ クリックで右表へ転記
   div.onclick = () => insertSymbolToBoard(d.symbol);
