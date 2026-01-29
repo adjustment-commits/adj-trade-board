@@ -425,11 +425,15 @@ const refreshBtn = document.getElementById("refreshBtn");
 async function refresh(){
 
   const inputs=[...document.querySelectorAll(".symbol")];
-  const symbols=inputs.map(i=>i.value.trim()).filter(v=>v!=="");
-   if(!Array.isArray(data)) return;
+const symbols=inputs.map(i=>i.value.trim()).filter(v=>v!=="");
 
-  const data = await fetchQuotes(symbols);
+if(symbols.length===0) return;
 
+const data = await fetchQuotes(symbols);
+if(!Array.isArray(data)) return;
+
+   console.log("REFRESH OK", data.length);
+   
   inputs.forEach(input=>{
     const row=input.closest("tr");
     const d=data.find(x=>x.symbol===input.value.trim().toUpperCase());
@@ -484,6 +488,7 @@ async function refresh(){
 }
 
 refreshBtn.onclick = refresh;
+
 
 /* ===========================
    INSERT
