@@ -96,7 +96,20 @@ const LOW_PRICE_LIST = [
 "4317.T","4321.T","4334.T","4346.T","4362.T","4382.T",
 "4393.T","4406.T","4425.T","4436.T","4464.T","4477.T",
 "4493.T","4519.T","4531.T","4552.T","4571.T","4583.T",
-"4597.T","4615.T","4627.T","4651.T","4667.T","4689.T"
+"4597.T","4615.T","4627.T","4651.T","4667.T","4689.T",
+"1716.T","1720.T","1766.T","1780.T","1807.T","1814.T",
+"1822.T","1850.T","1866.T","1885.T","1890.T","1916.T",
+"1948.T","1960.T","1973.T","2004.T","2055.T","2107.T",
+"2136.T","2157.T","2160.T","2173.T","2193.T","2201.T",
+"2215.T","2307.T","2321.T","2337.T","2353.T","2375.T",
+"2388.T","2397.T","2408.T","2429.T","2435.T","2445.T",
+"2471.T","2489.T","2492.T","2499.T","2501.T","2522.T",
+"2531.T","2586.T","2593.T","2607.T","2666.T","2673.T",
+"2695.T","2705.T","2714.T","2722.T","2734.T","2764.T",
+"2776.T","2780.T","2804.T","2811.T","2820.T","2830.T",
+"2844.T","2874.T","2884.T","2894.T","2901.T","2910.T",
+"2927.T","2931.T","2970.T","2978.T","3001.T","3011.T",
+"3020.T","3040.T","3053.T","3063.T","3082.T","3097.T"
 ];
 
 
@@ -271,9 +284,9 @@ clearBoard();
     d.spike = volumeSpike(d.regularMarketVolume, avgVol);
 
     if(scanMode==="short"){
-      if(!(d.regularMarketPrice<=300 &&
-           d.regularMarketChangePercent>=0.8 &&
-           d.spike>=1.3)) continue;
+      if(!(d.regularMarketPrice<=400 &&
+           d.regularMarketChangePercent>=0.3 &&
+           d.spike>=1.1)) continue;
     }
 
     if(scanMode==="long"){
@@ -284,7 +297,7 @@ clearBoard();
     const candles = await fetchCandles(d.symbol);
     const avgCandle = candleAverageScore(candles);
 
-    if(scanMode==="short" && avgCandle<1.2) continue;
+    if(scanMode==="short" && avgCandle<1.0) continue;
 
     const stars = calcStars(d, avgCandle);
 
