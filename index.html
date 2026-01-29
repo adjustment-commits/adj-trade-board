@@ -4,75 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ADJ Trade Board</title>
-
 <link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f172a">
 </head>
 
 <body>
 
-<!-- 🔒 ロック画面 -->
-<div id="lockScreen">
-  <h2>ADJ Trade Board</h2>
-  <input type="password" id="pwInput" placeholder="パスワード">
-  <button id="pwBtn">OK</button>
-  <div id="pwMsg"></div>
-</div>
+<h1>ADJ Trade Board</h1>
 
-<header>
-  <h1>ADJ Trade Board</h1>
-</header>
-
-<div id="app">
-
-<!-- 🚀 候補スキャナー -->
-<div id="scannerPanel">
-  <h2>🚀 候補スキャナー</h2>
-
+<div>
   <button id="scanBtn">スキャン</button>
-
-</div>
-
-<!-- 📋 監視ボード -->
-<div id="boardPanel">
-
   <button id="refreshBtn">更新</button>
   <button id="clearBtn">全削除</button>
-
-  <table>
-    <thead>
-      <tr>
-        <th>銘柄</th>
-        <th>企業名</th>
-        <th>価格</th>
-        <th>前日比</th>
-        <th>状態</th>
-        <th>Entry</th>
-        <th>TP</th>
-        <th>SL</th>
-        <th>損益%</th>
-        <th>備考</th>
-        <th>削除</th>
-      </tr>
-    </thead>
-
-    <tbody id="rows"></tbody>
-
-  </table>
-
 </div>
 
-</div>
+<table>
+<thead>
+<tr>
+<th>銘柄</th>
+<th>価格</th>
+<th>前日比%</th>
+<th>削除</th>
+</tr>
+</thead>
+<tbody id="rows"></tbody>
+</table>
 
-<!-- ✅ JSは必ず body の一番下 -->
-<script src="./script.js" defer></script>
-
-<script>
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("service-worker.js");
-}
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
