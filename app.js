@@ -33,7 +33,7 @@ tr.innerHTML=`
 <td class="tp">-</td>
 <td class="sl">-</td>
 <td><input class="note" value="${note}"></td>
-;
+`;
 rows.appendChild(tr);
 }
 }
