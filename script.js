@@ -1,9 +1,23 @@
 const API_KEY = "9da2719fc4mshd3a78b9ad23f661p120cb6jsn71fe0d28e188";
 const API_HOST = "yahoo-finance-real-time1.p.rapidapi.com";
 
+/* ---------- 低位株ユニバース ---------- */
+const LOW_PRICE_LIST = [
+"2134.T","2315.T","2330.T","2345.T","2370.T",
+"2687.T","2929.T","3031.T","3070.T","3315.T",
+"3521.T","3664.T","3823.T","3907.T","4180.T",
+"4594.T","4764.T","5017.T","5955.T","6298.T",
+"6335.T","6731.T","6993.T","7527.T","7615.T",
+"7777.T","8013.T","8202.T","8411.T","8746.T",
+"8894.T","9424.T","9878.T"
+];
+
 const refreshBtn = document.getElementById("refreshBtn");
 const autoBtn = document.getElementById("autoBtn");
 const rows = document.getElementById("rows");
+
+const scanBtn = document.getElementById("scanBtn");
+const scannerList = document.getElementById("scannerList");
 
 const STORAGE_KEY = "adj_trade_board";
 
@@ -84,8 +98,8 @@ if(!row.dataset.prevStatus){
   row.dataset.prevStatus = "";
 }
 
-const d = data.find(x => x.symbol === input.value.toUpperCase());
-
+const d = data.find(x => x.symbol === input.value.trim().toUpperCase());
+  
 if(!d){
 priceCell.textContent="-";
 changeCell.textContent="-";
@@ -103,7 +117,7 @@ changeCell.textContent =
 
 nameCell.textContent = d.shortName || d.longName || "-";
 
-const pct = d.regularMarketChangePercent;
+const pct = Number(d.regularMarketChangePercent || 0);
 
 row.className = "";
 
@@ -179,3 +193,34 @@ autoBtn.textContent="自動更新 ON";
 
 refreshBtn.onclick=refresh;
 autoBtn.onclick=toggleAuto;
+
+async function scanLowStocks(){
+
+  scannerList.innerHTML = "スキャン中...";
+
+  const data = await fetchQuotes(LOW_PRICE_LIST);
+
+  const rockets = data.filter(d=>{
+    const pct = d.regularMarketChangePercent;
+    return d.regularMarketPrice <= 300 &&
+           pct >= 2 &&
+           d.regularMarketVolume > 1000000;
+  });
+
+  if(rockets.length===0){
+    scannerList.innerHTML = "<div class='empty'>候補なし</div>";
+    return;
+  }
+
+  scannerList.innerHTML="";
+
+  rockets.forEach(d=>{
+    const div=document.createElement("div");
+    div.className="scanItem";
+    div.textContent=`${d.symbol}  ${d.shortName || ""}  🚀`;
+    scannerList.appendChild(div);
+  });
+
+}
+
+scanBtn.onclick = scanLowStocks;
