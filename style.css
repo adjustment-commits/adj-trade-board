@@ -72,3 +72,28 @@ tr.wait {
   flex:1;
   padding:10px;
 }
+
+.scanItem{
+  padding:8px;
+  border-bottom:1px solid #333;
+  cursor:pointer;
+}
+
+.scanSymbol{
+  font-weight:bold;
+  color:#6cf;
+}
+
+.scanName{
+  font-size:12px;
+  color:#ccc;
+}
+
+.scanRocket{
+  font-size:16px;
+  margin-top:2px;
+}
+
+.scanItem:hover{
+  background:#1a2a40;
+}
