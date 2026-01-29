@@ -272,7 +272,11 @@ const scanBtn=document.getElementById("scanBtn");
 const SCAN_RESULT_MODE = "TOP20";
 
 scanBtn.onclick = async ()=>{
-clearBoard();
+
+  scanStatus.textContent = "スキャン中...";
+  scanBtn.disabled = true;
+
+  clearBoard();
 
   const quotes = await fetchQuotes(LOW_PRICE_LIST);
 
@@ -333,6 +337,9 @@ clearBoard();
   });
 
   refresh();
+
+  scanStatus.textContent = "完了";
+  scanBtn.disabled = false;
 };
 
 /* ===========================
