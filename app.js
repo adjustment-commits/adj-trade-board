@@ -65,8 +65,11 @@ const row=input.closest("tr");
 const priceCell = row.querySelector(".price");
 const changeCell = row.querySelector(".change");
 const statusCell = row.querySelector(".status");
+if(!row.dataset.prevStatus){
+  row.dataset.prevStatus = "";
+}
 const nameCell  = row.querySelector(".name");
-const d=data.find(x=>x.symbol===input.value);
+const d = data.find(x => x.symbol === input.value.toUpperCase());
 
 if(!d){
 priceCell.textContent="-";
@@ -75,8 +78,12 @@ statusCell.textContent="🫷";
 return;
 }
 
-priceCell.textContent=d.regularMarketPrice?.toFixed(2);
-changeCell.textContent=d.regularMarketChangePercent?.toFixed(2)+"%";
+priceCell.textContent =
+  d.regularMarketPrice ? d.regularMarketPrice.toFixed(2) : "-";
+changeCell.textContent =
+  d.regularMarketChangePercent
+    ? d.regularMarketChangePercent.toFixed(2)+"%"
+    : "-";
 nameCell.textContent = d.shortName || d.longName || "-";
 
 const pct = d.regularMarketChangePercent;
@@ -93,6 +100,15 @@ statusCell.textContent="✨ TP候補";
 else{
 statusCell.textContent="🫷 WAIT";
 }
+// --- 状態変化チェック ---
+const prev = row.dataset.prevStatus;
+const current = statusCell.textContent;
+
+if(prev && prev !== current){
+  statusCell.textContent = `${prev} → ${current}`;
+}
+
+row.dataset.prevStatus = current;
 });
 }
 
