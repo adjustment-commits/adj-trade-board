@@ -38,6 +38,7 @@ function calcStars(d){
     if(d.regularMarketChangePercent>=5) s++;
     if(d.regularMarketVolume>=1000000) s++;
     if(d.regularMarketVolume>=3000000) s++;
+    if(candleScore(d) >= 2) s++;
   }else{
     if(d.regularMarketPrice<=300) s++;
     if(d.regularMarketVolume>=500000) s++;
@@ -151,10 +152,15 @@ const data=await fetchQuotes(LOW_PRICE_LIST);
 
 let rockets=data.filter(d=>{
 if(scanMode==="short"){
-return d.regularMarketPrice<=300 &&
-d.regularMarketChangePercent>=2 &&
-d.regularMarketVolume>=1000000;
-}else{
+
+  const candle = candleScore(d);
+
+  return d.regularMarketPrice<=300 &&
+         d.regularMarketChangePercent>=2 &&
+         d.regularMarketVolume>=1000000 &&
+         candle >= 2;
+}
+else{
 return d.regularMarketPrice<=300 &&
 d.regularMarketVolume>=500000;
 }});
@@ -230,3 +236,30 @@ document.addEventListener("click",(e)=>{
 
   saveBoard();   // ← 即保存
 });
+
+function candleScore(d){
+
+  const open  = d.regularMarketOpen;
+  const high  = d.regularMarketDayHigh;
+  const low   = d.regularMarketDayLow;
+  const close = d.regularMarketPrice;
+
+  if(!open || !high || !low || !close) return 0;
+
+  const body = Math.abs(close - open);
+  const range = high - low;
+  const lowerWick = Math.min(open, close) - low;
+
+  let score = 0;
+
+  // 陽線
+  if(close > open) score++;
+
+  // 実体がレンジの30%以上
+  if(body / range >= 0.3) score++;
+
+  // 下ヒゲがレンジの25%以上
+  if(lowerWick / range >= 0.25) score++;
+
+  return score; // 0〜3
+}
