@@ -22,8 +22,10 @@ border-radius:4px;
 }
 
 table{
-width:100%;
-border-collapse:collapse;
+  width:100%;
+  border-collapse:collapse;
+  overflow-x:auto;
+  display:block;
 }
 
 th,td{
@@ -58,7 +60,7 @@ tr.wait {
 
 #app{
   display:flex;
-  height:100vh;
+  min-height:100vh;
 }
 
 #scannerPanel{
@@ -268,8 +270,27 @@ font-size:12px;
 color:#9ca3af;
 }
 
-table{
-  width:100%;
-  overflow-x:auto;
-  display:block;
+
+input, button{
+  font-size:16px;
+  min-height:40px;
+}
+
+@media (max-width:768px){
+  #app{
+    flex-direction:column;
+  }
+
+  #scannerPanel{
+    width:100%;
+    order:1;
+  }
+
+  #boardPanel{
+    order:2;
+  }
+}
+
+.scanItem{
+  padding:14px;
 }
