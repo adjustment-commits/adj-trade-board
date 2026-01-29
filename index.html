@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ADJ Trade Board</title>
+
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f172a">
@@ -27,87 +28,49 @@
 
 <!-- 🚀 候補スキャナー -->
 <div id="scannerPanel">
-<h2>🚀 候補スキャナー</h2>
+  <h2>🚀 候補スキャナー</h2>
 
-<div id="patternControls">
-
-<label>実体率 % 以上</label>
-<input type="number" id="bodyRate" value="30">
-
-<label>下ヒゲ率 % 以上</label>
-<input type="number" id="lowerWickRate" value="25">
-
-<label>上ヒゲ率 % 以下</label>
-<input type="number" id="upperWickRate" value="40">
-
-<label>
-<input type="checkbox" id="bullOnly" checked>
-陽線のみ
-</label>
+  <button id="scanBtn">スキャン</button>
 
 </div>
 
-<button id="scanBtn">スキャン</button>
-
-<div id="scannerList"></div>
-</div>
-
-<!-- 監視ボード -->
+<!-- 📋 監視ボード -->
 <div id="boardPanel">
 
-<button id="refreshBtn">更新</button>
-<button id="autoBtn">自動更新</button>
-<button id="clearBtn">全削除</button>
+  <button id="refreshBtn">更新</button>
+  <button id="clearBtn">全削除</button>
 
-<table>
-<thead>
-<tr>
-<th>銘柄</th>
-<th>企業名</th>
-<th>価格</th>
-<th>前日比</th>
-<th>状態</th>
-<th>Entry</th>
-<th>TP</th>
-<th>SL</th>
-<th>損益%</th>
-<th>備考</th>
-<th>削除</th>
-</tr>
-</thead>
+  <table>
+    <thead>
+      <tr>
+        <th>銘柄</th>
+        <th>企業名</th>
+        <th>価格</th>
+        <th>前日比</th>
+        <th>状態</th>
+        <th>Entry</th>
+        <th>TP</th>
+        <th>SL</th>
+        <th>損益%</th>
+        <th>備考</th>
+        <th>削除</th>
+      </tr>
+    </thead>
 
-<tbody id="rows"></tbody>
-</table>
+    <tbody id="rows"></tbody>
 
-</div>
+  </table>
 
 </div>
 
-<!-- ⚙設定 -->
-<button id="openSettings">⚙</button>
-
-<div id="settingsPanel">
-<h3>設定</h3>
-
-<h4>パスワード変更</h4>
-<input type="password" id="currentPw">
-<input type="password" id="newPw">
-<button id="changePwBtn">変更</button>
-<div id="settingsMsg"></div>
-
-<h4>テーマ</h4>
-<button class="themeBtn" data-theme="dark">Dark</button>
-<button class="themeBtn" data-theme="light">Light</button>
-<button class="themeBtn" data-theme="neon">Neon</button>
-
-<button id="closeSettings">閉じる</button>
 </div>
 
+<!-- ✅ JSは必ず body の一番下 -->
 <script src="script.js"></script>
 
 <script>
 if("serviceWorker" in navigator){
- navigator.serviceWorker.register("service-worker.js");
+  navigator.serviceWorker.register("service-worker.js");
 }
 </script>
 
