@@ -267,3 +267,9 @@ gap:4px;
 font-size:12px;
 color:#9ca3af;
 }
+
+table{
+  width:100%;
+  overflow-x:auto;
+  display:block;
+}
