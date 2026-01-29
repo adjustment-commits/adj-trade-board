@@ -77,12 +77,19 @@ return;
 priceCell.textContent=d.regularMarketPrice?.toFixed(2);
 changeCell.textContent=d.regularMarketChangePercent?.toFixed(2)+"%";
 
-if(d.regularMarketChangePercent>2){
-statusCell.textContent="🚀";
-}else if(d.regularMarketChangePercent<-2){
-statusCell.textContent="🔥";
-}else{
-statusCell.textContent="🫷";
+const pct = d.regularMarketChangePercent;
+
+if(pct >= 2){
+statusCell.textContent="🚀 BUY";
+}
+else if(pct <= -2){
+statusCell.textContent="🔥 SL";
+}
+else if(pct >= 1){
+statusCell.textContent="✨ TP候補";
+}
+else{
+statusCell.textContent="🫷 WAIT";
 }
 });
 }
