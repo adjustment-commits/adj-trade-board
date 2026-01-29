@@ -1,4 +1,6 @@
 alert("JS LOADED");
+console.log("scanBtn:", document.getElementById("scanBtn"));
+console.log("refreshBtn:", document.getElementById("refreshBtn"));
 /*********************************
  ADJ TRADE BOARD - FULL JS
 *********************************/
