@@ -1,0 +1,44 @@
+const CACHE_NAME = "adj-screener-v1";
+const ASSETS = [
+"./",
+"./index.html",
+"./styles.css",
+"./app.js",
+"./manifest.json",
+"./icons/icon.svg",
+"./icons/maskable.svg"
+];
+
+self.addEventListener("install", (event) => {
+event.waitUntil(
+caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+);
+});
+
+self.addEventListener("activate", (event) => {
+event.waitUntil(
+Promise.all([
+self.clients.claim(),
+caches.keys().then(keys => Promise.all(keys.map(k => (k === CACHE_NAME ? null : caches.delete(k)))))
+])
+);
+});
+
+self.addEventListener("fetch", (event) => {
+const req = event.request;
+const url = new URL(req.url);
+
+// 自前データ取得（プロキシやRapidAPI）は常にネット優先
+if(url.pathname.includes("/api/") || url.hostname.includes("rapidapi.com") || url.hostname.includes("p.rapidapi.com")){
+event.respondWith(fetch(req).catch(() => caches.match(req)));
+return;
+}
+
+event.respondWith(
+caches.match(req).then((cached) => cached || fetch(req).then((res) => {
+const copy = res.clone();
+caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+return res;
+}).catch(() => cached))
+);
+});
