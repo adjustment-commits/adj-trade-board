@@ -15,6 +15,7 @@ for(let i=0;i<20;i++){
 const tr=document.createElement("tr");
 tr.innerHTML=`
 <td><input class="symbol"></td>
+<td class="name">-</td>
 <td class="price">-</td>
 <td class="change">-</td>
 <td class="status">🫷</td>
@@ -61,10 +62,10 @@ const data=await fetchQuotes(symbols);
 
 symbolInputs.forEach((input,i)=>{
 const row=input.closest("tr");
-const priceCell=row.querySelector(".price");
-const changeCell=row.querySelector(".change");
-const statusCell=row.querySelector(".status");
-
+const priceCell = row.querySelector(".price");
+const changeCell = row.querySelector(".change");
+const statusCell = row.querySelector(".status");
+const nameCell  = row.querySelector(".name");
 const d=data.find(x=>x.symbol===input.value);
 
 if(!d){
@@ -76,6 +77,7 @@ return;
 
 priceCell.textContent=d.regularMarketPrice?.toFixed(2);
 changeCell.textContent=d.regularMarketChangePercent?.toFixed(2)+"%";
+nameCell.textContent = d.shortName || d.longName || "-";
 
 const pct = d.regularMarketChangePercent;
 
