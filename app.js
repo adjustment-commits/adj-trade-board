@@ -5,21 +5,30 @@ const refreshBtn = document.getElementById("refreshBtn");
 const autoBtn = document.getElementById("autoBtn");
 const rows = document.getElementById("rows");
 
+const STORAGE_KEY = "adj_trade_board";
+
 let auto=false;
 let timer=null;
 
 /* ---------- 初期20行 ---------- */
 function buildRows(){
+
+const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
 rows.innerHTML="";
 for(let i=0;i<20;i++){
+
+const sym = saved[i]?.symbol || "";
+const note = saved[i]?.note || "";
+
 const tr=document.createElement("tr");
 tr.innerHTML=`
-<td><input class="symbol"></td>
+<td><input class="symbol" value="${sym}"></td>
 <td class="name">-</td>
 <td class="price">-</td>
 <td class="change">-</td>
 <td class="status">🫷</td>
-<td><input class="note"></td>
+<td><input class="note" value="${note}"></td>
 `;
 rows.appendChild(tr);
 }
@@ -60,15 +69,17 @@ if(symbols.length===0) return;
 
 const data=await fetchQuotes(symbols);
 
-symbolInputs.forEach((input,i)=>{
+symbolInputs.forEach((input)=>{
 const row=input.closest("tr");
 const priceCell = row.querySelector(".price");
 const changeCell = row.querySelector(".change");
 const statusCell = row.querySelector(".status");
+const nameCell  = row.querySelector(".name");
+
 if(!row.dataset.prevStatus){
   row.dataset.prevStatus = "";
 }
-const nameCell  = row.querySelector(".name");
+
 const d = data.find(x => x.symbol === input.value.toUpperCase());
 
 if(!d){
@@ -80,10 +91,12 @@ return;
 
 priceCell.textContent =
   d.regularMarketPrice ? d.regularMarketPrice.toFixed(2) : "-";
+
 changeCell.textContent =
   d.regularMarketChangePercent
     ? d.regularMarketChangePercent.toFixed(2)+"%"
     : "-";
+
 nameCell.textContent = d.shortName || d.longName || "-";
 
 const pct = d.regularMarketChangePercent;
@@ -106,7 +119,7 @@ else{
   statusCell.textContent="🫷 WAIT";
   row.classList.add("wait");
 }
-  
+
 // --- 状態変化チェック ---
 const prev = row.dataset.prevStatus;
 const current = statusCell.textContent;
@@ -116,7 +129,19 @@ if(prev && prev !== current){
 }
 
 row.dataset.prevStatus = current;
+
 });
+
+/* ===== localStorage保存 ===== */
+const saveData = [...document.querySelectorAll("#rows tr")]
+  .map(tr => ({
+    symbol: tr.querySelector(".symbol").value,
+    note: tr.querySelector(".note").value
+  }));
+
+localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+/* ============================ */
+
 }
 
 /* ---------- Auto ---------- */
