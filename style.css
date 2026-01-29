@@ -1,27 +1,82 @@
 body{
-font-family:system-ui;
-background:#0d1117;
-color:#fff;
-padding:10px;
+  background:#0b0f1a;
+  color:#fff;
+  font-family:system-ui;
+  margin:0;
+}
+
+header{
+  padding:10px 20px;
+  background:#0f172a;
+}
+
+#app{
+  padding:20px;
+  display:flex;
+  gap:30px;
+}
+
+#scannerPanel{
+  width:240px;
 }
 
 button{
-padding:8px 12px;
-margin-right:6px;
-background:#2563eb;
-color:white;
-border:none;
-border-radius:6px;
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  margin:4px 2px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+button:hover{
+  opacity:0.85;
+}
+
+.modeSwitch{
+  margin-bottom:10px;
+}
+
+.modeSwitch button.active{
+  background:#22c55e;
 }
 
 table{
-width:100%;
-border-collapse:collapse;
-margin-top:10px;
+  border-collapse:collapse;
+  min-width:900px;
 }
 
 th,td{
-border:1px solid #334155;
-padding:6px;
-text-align:center;
+  border:1px solid #334155;
+  padding:6px Toggle-align:center;
+  text-align:center;
+}
+
+input{
+  width:70px;
+  background:#020617;
+  color:#fff;
+  border:1px solid #334155;
+}
+
+.buy{ background:#064e3b; }
+.tp{ background:#1e3a8a; }
+.sl{ background:#7f1d1d; }
+.wait{ background:#111827; }
+
+/* ロック画面 */
+#lockScreen{
+  position:fixed;
+  inset:0;
+  background:#020617;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+#lockScreen input{
+  margin:10px;
 }
