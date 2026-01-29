@@ -1,14 +1,13 @@
-/*************************************************
- * 初期非表示（ロック解除までUIを隠す）
- *************************************************/
+/* ===========================
+   PASSWORD LOCK
+=========================== */
+
 const app = document.getElementById("app");
 const headerEl = document.querySelector("header");
+
 app.style.display = "none";
 headerEl.style.display = "none";
 
-/*************************************************
- * PASSWORD LOCK
- *************************************************/
 const PW_KEY = "adj_trade_password";
 
 const lockScreen = document.getElementById("lockScreen");
@@ -16,7 +15,6 @@ const pwInput = document.getElementById("pwInput");
 const pwBtn = document.getElementById("pwBtn");
 const pwMsg = document.getElementById("pwMsg");
 
-// 初期メッセージ
 (function(){
   if(!localStorage.getItem(PW_KEY)){
     pwMsg.textContent="新しいパスワードを設定してください";
@@ -29,7 +27,6 @@ pwBtn.onclick = ()=>{
   const input = pwInput.value.trim();
   if(!input) return;
 
-  // 初回登録
   if(!localStorage.getItem(PW_KEY)){
     localStorage.setItem(PW_KEY,input);
     lockScreen.style.display="none";
@@ -38,7 +35,6 @@ pwBtn.onclick = ()=>{
     return;
   }
 
-  // 照合
   if(input === localStorage.getItem(PW_KEY)){
     lockScreen.style.display="none";
     app.style.display="flex";
@@ -48,48 +44,18 @@ pwBtn.onclick = ()=>{
   }
 };
 
-/*************************************************
- * SETTINGS
- *************************************************/
-const openSettingsBtn = document.getElementById("openSettings");
-const closeSettingsBtn = document.getElementById("closeSettings");
-const settingsPanel = document.getElementById("settingsPanel");
 
-const currentPw = document.getElementById("currentPw");
-const newPw = document.getElementById("newPw");
-const changePwBtn = document.getElementById("changePwBtn");
-const settingsMsg = document.getElementById("settingsMsg");
+/* ===========================
+   API SETTINGS
+=========================== */
 
-openSettingsBtn.onclick = ()=>{
-  settingsPanel.style.display="flex";
-};
-
-closeSettingsBtn.onclick = ()=>{
-  settingsPanel.style.display="none";
-  currentPw.value="";
-  newPw.value="";
-  settingsMsg.textContent="";
-};
-
-changePwBtn.onclick = ()=>{
-  const now = localStorage.getItem(PW_KEY);
-  if(currentPw.value !== now){
-    settingsMsg.textContent="現在のパスワードが違います";
-    return;
-  }
-  if(newPw.value.length < 4){
-    settingsMsg.textContent="4文字以上にしてください";
-    return;
-  }
-  localStorage.setItem(PW_KEY,newPw.value);
-  settingsMsg.textContent="変更しました";
-};
-
-/*************************************************
- * API SETTINGS
- *************************************************/
 const API_KEY = "9da2719fc4mshd3a78b9ad23f661p120cb6jsn71fe0d28e188";
 const API_HOST = "yahoo-finance-real-time1.p.rapidapi.com";
+
+
+/* ===========================
+   LOW PRICE LIST
+=========================== */
 
 const LOW_PRICE_LIST = [
 "2134.T","2315.T","2330.T","2345.T","2370.T",
@@ -101,11 +67,11 @@ const LOW_PRICE_LIST = [
 "8894.T","9424.T","9878.T"
 ];
 
-const STORAGE_KEY = "adj_trade_board";
 
-/*************************************************
- * MODE SWITCH
- *************************************************/
+/* ===========================
+   MODE SWITCH
+=========================== */
+
 let scanMode="short";
 
 const modeLabel = document.getElementById("scanModeLabel");
@@ -113,25 +79,176 @@ const modeShortBtn = document.getElementById("modeShort");
 const modeLongBtn  = document.getElementById("modeLong");
 
 function setMode(mode){
-  scanMode=mode;
-  modeLabel.textContent="MODE : "+mode.toUpperCase();
+  scanMode = mode;
+  modeLabel.textContent = "MODE : " + mode.toUpperCase();
+
   modeShortBtn.classList.remove("active");
   modeLongBtn.classList.remove("active");
+
   if(mode==="short") modeShortBtn.classList.add("active");
-  if(mode==="long") modeLongBtn.classList.add("active");
+  if(mode==="long")  modeLongBtn.classList.add("active");
 }
-modeShortBtn.onclick=()=>setMode("short");
-modeLongBtn.onclick =()=>setMode("long");
+
+modeShortBtn.onclick = ()=>setMode("short");
+modeLongBtn.onclick  = ()=>setMode("long");
 setMode("short");
 
-/*************************************************
- * BUILD ROWS
- *************************************************/
+
+/* ===========================
+   FETCH QUOTES
+=========================== */
+
+async function fetchQuotes(symbols){
+const url=`https://${API_HOST}/market/get-quotes?region=JP&symbols=${symbols.join(",")}`;
+const res=await fetch(url,{
+headers:{
+"x-rapidapi-key":API_KEY,
+"x-rapidapi-host":API_HOST
+}});
+const json=await res.json();
+return json.quoteResponse?.result||[];
+}
+
+
+/* ===========================
+   FETCH 3 DAILY CANDLES
+=========================== */
+
+async function fetchCandles(symbol){
+
+const url = `https://${API_HOST}/stock/v3/get-historical-data?symbol=${symbol}&region=JP`;
+
+const res = await fetch(url,{
+headers:{
+"x-rapidapi-key":API_KEY,
+"x-rapidapi-host":API_HOST
+}});
+
+const json = await res.json();
+return json.prices?.slice(0,3) || [];
+}
+
+
+/* ===========================
+   CANDLE SCORE
+=========================== */
+
+function candleScore(c){
+
+  const open=c.open;
+  const high=c.high;
+  const low=c.low;
+  const close=c.close;
+
+  if(!open||!high||!low||!close) return 0;
+
+  const body=Math.abs(close-open);
+  const range=high-low;
+  const lowerWick=Math.min(open,close)-low;
+
+  let s=0;
+  if(close>open) s++;
+  if(body/range>=0.3) s++;
+  if(lowerWick/range>=0.25) s++;
+
+  return s;
+}
+
+function candleAverageScore(candles){
+  if(candles.length===0) return 0;
+  let total=0;
+  candles.forEach(c=> total+=candleScore(c));
+  return total / candles.length;
+}
+
+
+/* ===========================
+   STAR SCORE
+=========================== */
+
+function calcStars(d,avgCandle){
+
+  let s=0;
+
+  if(scanMode==="short"){
+    if(d.regularMarketChangePercent>=2) s++;
+    if(d.regularMarketChangePercent>=5) s++;
+    if(d.regularMarketVolume>=1000000) s++;
+    if(d.regularMarketVolume>=3000000) s++;
+    if(avgCandle>=1.5) s++;
+  }else{
+    if(d.regularMarketPrice<=300) s++;
+    if(d.regularMarketVolume>=500000) s++;
+    if(d.regularMarketChangePercent>-2 &&
+       d.regularMarketChangePercent<2) s++;
+    if(d.regularMarketChangePercent>0) s++;
+  }
+
+  return "★".repeat(s);
+}
+
+
+/* ===========================
+   SCANNER
+=========================== */
+
+const scanBtn=document.getElementById("scanBtn");
+const scannerList=document.getElementById("scannerList");
+
+scanBtn.onclick = async ()=>{
+
+scannerList.innerHTML="スキャン中...";
+
+const quotes = await fetchQuotes(LOW_PRICE_LIST);
+scannerList.innerHTML="";
+
+for(const d of quotes){
+
+  if(scanMode==="short"){
+    if(!(d.regularMarketPrice<=300 &&
+         d.regularMarketChangePercent>=2 &&
+         d.regularMarketVolume>=1000000)) continue;
+  }
+
+  if(scanMode==="long"){
+    if(!(d.regularMarketPrice<=300 &&
+         d.regularMarketVolume>=500000)) continue;
+  }
+
+  const candles = await fetchCandles(d.symbol);
+  const avgCandle = candleAverageScore(candles);
+
+  if(scanMode==="short" && avgCandle<1.5) continue;
+
+  const stars = calcStars(d,avgCandle);
+
+  const div=document.createElement("div");
+  div.className="scanItem";
+
+  div.innerHTML=`
+    <div>${d.symbol}</div>
+    <div>${d.shortName||""}</div>
+    <div>🚀 ${stars}</div>
+  `;
+
+  div.onclick=()=>insertSymbolToBoard(d.symbol);
+  scannerList.appendChild(div);
+}
+
+};
+
+
+/* ===========================
+   BOARD
+=========================== */
+
+const STORAGE_KEY="adj_trade_board";
 const rows=document.getElementById("rows");
 
 function buildRows(){
 const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
 rows.innerHTML="";
+
 for(let i=0;i<20;i++){
 const tr=document.createElement("tr");
 tr.innerHTML=`
@@ -152,124 +269,31 @@ rows.appendChild(tr);
 }
 buildRows();
 
-/*************************************************
- * FETCH
- *************************************************/
-async function fetchQuotes(symbols){
-const url=`https://${API_HOST}/market/get-quotes?region=JP&symbols=${symbols.join(",")}`;
-const res=await fetch(url,{
-headers:{
-"x-rapidapi-key":API_KEY,
-"x-rapidapi-host":API_HOST
-}});
-const json=await res.json();
-return json.quoteResponse?.result||[];
-}
 
-/*************************************************
- * CANDLE SCORE
- *************************************************/
-function candleScore(d){
+/* ===========================
+   INSERT
+=========================== */
 
-const open  = d.regularMarketOpen;
-const high  = d.regularMarketDayHigh;
-const low   = d.regularMarketDayLow;
-const close = d.regularMarketPrice;
+function insertSymbolToBoard(symbol){
 
-if(!open || !high || !low || !close) return 0;
-
-const body = Math.abs(close-open);
-const range = high-low;
-const lower = Math.min(open,close)-low;
-const upper = high-Math.max(open,close);
-
-const bodyRate  = body/range*100;
-const lowerRate = lower/range*100;
-const upperRate = upper/range*100;
-
-// UI値
-const minBody  = Number(document.getElementById("bodyRate").value);
-const minLower = Number(document.getElementById("lowerWickRate").value);
-const maxUpper = Number(document.getElementById("upperWickRate").value);
-const bullOnly = document.getElementById("bullOnly").checked;
-
-let ok = true;
-
-if(bodyRate < minBody) ok=false;
-if(lowerRate < minLower) ok=false;
-if(upperRate > maxUpper) ok=false;
-if(bullOnly && close<=open) ok=false;
-
-return ok ? 3 : 0;
-}
-
-/*************************************************
- * STAR SCORE
- *************************************************/
-function calcStars(d){
-let s=0;
-if(scanMode==="short"){
- if(d.regularMarketChangePercent>=2) s++;
- if(d.regularMarketChangePercent>=5) s++;
- if(d.regularMarketVolume>=1000000) s++;
- if(d.regularMarketVolume>=3000000) s++;
- if(candleScore(d)>=2) s++;
-}else{
- if(d.regularMarketPrice<=300) s++;
- if(d.regularMarketVolume>=500000) s++;
- if(d.regularMarketChangePercent>-2 &&
-    d.regularMarketChangePercent<2) s++;
- if(d.regularMarketChangePercent>0) s++;
-}
-return "★".repeat(s);
-}
-
-/*************************************************
- * REFRESH BOARD
- *************************************************/
-async function refresh(){
 const inputs=[...document.querySelectorAll(".symbol")];
-const symbols=inputs.map(i=>i.value.trim()).filter(v=>v);
-if(!symbols.length) return;
+if(inputs.some(i=>i.value===symbol)) return;
 
-const data=await fetchQuotes(symbols);
+const empty=inputs.find(i=>i.value==="");
+if(empty) empty.value=symbol;
+else alert("空き行なし");
 
-inputs.forEach(input=>{
-const row=input.closest("tr");
-const d=data.find(x=>x.symbol===input.value.toUpperCase());
-if(!d) return;
-
-row.querySelector(".price").textContent=d.regularMarketPrice.toFixed(2);
-row.querySelector(".change").textContent=d.regularMarketChangePercent.toFixed(2)+"%";
-row.querySelector(".name").textContent=d.shortName||"-";
-
-const pct=d.regularMarketChangePercent;
-row.className="";
-if(pct>=2){row.classList.add("buy");row.querySelector(".status").textContent="🚀";}
-else if(pct<=-2){row.classList.add("sl");row.querySelector(".status").textContent="🔥";}
-else if(pct>=1){row.classList.add("tp");row.querySelector(".status").textContent="✨";}
-else{row.classList.add("wait");row.querySelector(".status").textContent="🫷";}
-
-const entry=parseFloat(row.querySelector(".entry").value);
-if(entry){
-row.querySelector(".tp").textContent=(entry*1.02).toFixed(2);
-row.querySelector(".sl").textContent=(entry*0.99).toFixed(2);
-row.querySelector(".diff").textContent=
-(((d.regularMarketPrice-entry)/entry)*100).toFixed(1)+"%";
-}else{
-row.querySelector(".tp").textContent="-";
-row.querySelector(".sl").textContent="-";
-row.querySelector(".diff").textContent="-";
-}
-});
 saveBoard();
 }
 
-/*************************************************
- * SAVE
- *************************************************/
+
+/* ===========================
+   SAVE
+=========================== */
+
 function saveBoard(){
-const data=[...document.querySelectorAll("#rows tr")].map(tr=>({
+const data=[...document.querySelectorAll("#rows tr")]
+.map(tr=>({
 symbol:tr.querySelector(".symbol").value,
 entry:tr.querySelector(".entry").value,
 note:tr.querySelector(".note").value
@@ -277,63 +301,21 @@ note:tr.querySelector(".note").value
 localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
 }
 
-/*************************************************
- * SCANNER
- *************************************************/
-const scanBtn=document.getElementById("scanBtn");
-const scannerList=document.getElementById("scannerList");
 
-scanBtn.onclick=async()=>{
-scannerList.innerHTML="スキャン中...";
-const data=await fetchQuotes(LOW_PRICE_LIST);
+/* ===========================
+   DELETE
+=========================== */
 
-let rockets=data.filter(d=>{
-if(scanMode==="short"){
-return d.regularMarketPrice<=300 &&
-d.regularMarketChangePercent>=2 &&
-d.regularMarketVolume>=1000000 &&
-candleScore(d)>=2;
-}else{
-return d.regularMarketPrice<=300 &&
-d.regularMarketVolume>=500000;
-}
-});
-
-rockets.sort((a,b)=>calcStars(b).length-calcStars(a).length);
-scannerList.innerHTML="";
-
-rockets.forEach(d=>{
-const div=document.createElement("div");
-div.className="scanItem";
-div.innerHTML=`
-<div>${d.symbol}</div>
-<div>${d.shortName||""}</div>
-<div>🚀 ${calcStars(d)}</div>
-`;
-div.onclick=()=>insertSymbolToBoard(d.symbol);
-scannerList.appendChild(div);
-});
-};
-
-/*************************************************
- * INSERT
- *************************************************/
-function insertSymbolToBoard(symbol){
-const inputs=[...document.querySelectorAll(".symbol")];
-if(inputs.some(i=>i.value===symbol)) return;
-const empty=inputs.find(i=>!i.value);
-if(empty){empty.value=symbol;refresh();}
-}
-
-/*************************************************
- * DELETE
- *************************************************/
 document.addEventListener("click",(e)=>{
+
 if(!e.target.classList.contains("delBtn")) return;
+
 const row=e.target.closest("tr");
+
 row.querySelector(".symbol").value="";
 row.querySelector(".entry").value="";
 row.querySelector(".note").value="";
+
 row.querySelector(".name").textContent="-";
 row.querySelector(".price").textContent="-";
 row.querySelector(".change").textContent="-";
@@ -341,38 +323,7 @@ row.querySelector(".status").textContent="🫷";
 row.querySelector(".tp").textContent="-";
 row.querySelector(".sl").textContent="-";
 row.querySelector(".diff").textContent="-";
+
 row.className="";
 saveBoard();
 });
-
-/*************************************************
- * THEME
- *************************************************/
-const THEME_KEY="adj_theme";
-const themeBtns=document.querySelectorAll(".themeBtn");
-document.body.className=localStorage.getItem(THEME_KEY)||"dark";
-
-themeBtns.forEach(btn=>{
-btn.onclick=()=>{
-document.body.className=btn.dataset.theme;
-localStorage.setItem(THEME_KEY,btn.dataset.theme);
-};
-});
-
-/* ============================
-   画像アップロード
-============================ */
-
-const patternInput = document.getElementById("patternImage");
-const previewImage = document.getElementById("previewImage");
-
-patternInput.onchange = () => {
-  const file = patternInput.files[0];
-  if(!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e=>{
-    previewImage.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-};
