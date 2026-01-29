@@ -224,16 +224,13 @@ if(d.spike>=3) s++;
 =========================== */
 
 const scanBtn=document.getElementById("scanBtn");
-const scannerList=document.getElementById("scannerList");
 
 scanBtn.onclick = async ()=>{
 
-scannerList.innerHTML="スキャン中...";
-
 const quotes = await fetchQuotes(LOW_PRICE_LIST);
-scannerList.innerHTML="";
 
 for(const d of quotes){
+   
      const avgVol = await fetchVolumeAverage(d.symbol);
   d.spike = volumeSpike(d.regularMarketVolume, avgVol);
 
@@ -254,21 +251,9 @@ for(const d of quotes){
   if(scanMode==="short" && avgCandle<1.2) continue;
 
   const stars = calcStars(d,avgCandle);
-
-  const div=document.createElement("div");
-  div.className="scanItem";
-
-  div.innerHTML=`
-    <div>${d.symbol}</div>
-    <div>${d.shortName||""}</div>
-    <div>🚀 ${stars}</div>
-<div>Vol x${d.spike ? d.spike.toFixed(1) : "-"}</div>
-  `;
-
-  div.onclick=()=>insertSymbolToBoard(d.symbol);
-  scannerList.appendChild(div);
+ insertSymbolToBoard(d.symbol);
 }
-
+refresh(); 
 };
 
 
