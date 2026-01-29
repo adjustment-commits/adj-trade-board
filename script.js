@@ -259,35 +259,53 @@ const scanBtn=document.getElementById("scanBtn");
 
 scanBtn.onclick = async ()=>{
 
-const quotes = await fetchQuotes(LOW_PRICE_LIST);
+  const quotes = await fetchQuotes(LOW_PRICE_LIST);
 
-for(const d of quotes){
-   
-     const avgVol = await fetchVolumeAverage(d.symbol);
-  d.spike = volumeSpike(d.regularMarketVolume, avgVol);
+  let candidates = [];
 
- if(scanMode==="short"){
-  if(!(d.regularMarketPrice<=300 &&
-       d.regularMarketChangePercent>=0.8 &&
-       d.spike>=1.3)) continue;
-}
-   
-  if(scanMode==="long"){
-    if(!(d.regularMarketPrice<=300 &&
-         d.regularMarketVolume>=500000)) continue;
+  for(const d of quotes){
+
+    const avgVol = await fetchVolumeAverage(d.symbol);
+    d.spike = volumeSpike(d.regularMarketVolume, avgVol);
+
+    if(scanMode==="short"){
+      if(!(d.regularMarketPrice<=300 &&
+           d.regularMarketChangePercent>=0.8 &&
+           d.spike>=1.3)) continue;
+    }
+
+    if(scanMode==="long"){
+      if(!(d.regularMarketPrice<=300 &&
+           d.regularMarketVolume>=500000)) continue;
+    }
+
+    const candles = await fetchCandles(d.symbol);
+    const avgCandle = candleAverageScore(candles);
+
+    if(scanMode==="short" && avgCandle<1.2) continue;
+
+    const stars = calcStars(d, avgCandle);
+    const score = stars.length;   // ★の数を数値化
+
+    candidates.push({
+      symbol: d.symbol,
+      score: score
+    });
   }
 
-  const candles = await fetchCandles(d.symbol);
-  const avgCandle = candleAverageScore(candles);
+  // ★が多い順に並べ替え
+  candidates.sort((a,b)=>b.score - a.score);
 
-  if(scanMode==="short" && avgCandle<1.2) continue;
+  // 上位20件だけ
+  const top20 = candidates.slice(0,20);
 
-  const stars = calcStars(d,avgCandle);
- insertSymbolToBoard(d.symbol);
-}
-refresh(); 
+  // ボードへ自動転送
+  top20.forEach(c=>{
+    insertSymbolToBoard(c.symbol);
+  });
+
+  refresh();
 };
-
 
 /* ===========================
    BOARD
