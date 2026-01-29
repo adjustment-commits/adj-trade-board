@@ -342,3 +342,21 @@ document.body.className=btn.dataset.theme;
 localStorage.setItem(THEME_KEY,btn.dataset.theme);
 };
 });
+
+/* ============================
+   画像アップロード
+============================ */
+
+const patternInput = document.getElementById("patternImage");
+const previewImage = document.getElementById("previewImage");
+
+patternInput.onchange = () => {
+  const file = patternInput.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e=>{
+    previewImage.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
