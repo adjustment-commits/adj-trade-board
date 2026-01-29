@@ -363,3 +363,23 @@ function candleScore(d){
 
   return score; // 0〜3
 }
+
+/* ===========================
+   THEME
+=========================== */
+
+const THEME_KEY = "adj_theme";
+const themeBtns = document.querySelectorAll(".themeBtn");
+
+/* 初期反映 */
+const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
+document.body.className = savedTheme;
+
+/* 切替 */
+themeBtns.forEach(btn=>{
+  btn.onclick = ()=>{
+    const theme = btn.dataset.theme;
+    document.body.className = theme;
+    localStorage.setItem(THEME_KEY, theme);
+  };
+});
