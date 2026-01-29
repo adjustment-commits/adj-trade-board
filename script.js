@@ -213,13 +213,16 @@ async function scanLowStocks(){
   }
 
   scannerList.innerHTML="";
+rockets.forEach(d=>{
+  const div=document.createElement("div");
+  div.className="scanItem";
+  div.textContent=`${d.symbol}  ${d.shortName || ""}  🚀`;
 
-  rockets.forEach(d=>{
-    const div=document.createElement("div");
-    div.className="scanItem";
-    div.textContent=`${d.symbol}  ${d.shortName || ""}  🚀`;
-    scannerList.appendChild(div);
-  });
+  // ★ クリックで右表へ転記
+  div.onclick = () => insertSymbolToBoard(d.symbol);
+
+  scannerList.appendChild(div);
+});
 
 }
 
