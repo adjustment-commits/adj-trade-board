@@ -17,7 +17,7 @@ const STORAGE_KEY = "adj_stock_board";
    API SETTINGS
 =========================== */
 
-const API_KEY = localStorage.getItem("RAPID_API_KEY");
+const API_KEY = "7f90ccb5f2mshdfa89c12f41b259p1ce25djsn72ddaa09eea5";
 const API_HOST = "yahoo-finance-real-time1.p.rapidapi.com";
 
 /* ===========================
