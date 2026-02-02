@@ -272,3 +272,85 @@ async function fetchAvgVolume(symbol){
     return null;
   }
 }
+
+/* ===========================
+   ROCKET SCANNER
+=========================== */
+
+const rocketBtn = document.getElementById("rocketBtn");
+const rocketArea = document.getElementById("rocketArea");
+
+rocketBtn.onclick = async ()=>{
+
+  rocketArea.innerHTML = "スキャン中...<br>";
+
+  const CHUNK = 30;
+  let rockets = [];
+
+  for(let i=0;i<LOW_PRICE_LIST.length;i+=CHUNK){
+
+    const part = LOW_PRICE_LIST.slice(i,i+CHUNK);
+
+    try{
+
+      const url =
+        `https://${API_HOST}/market/get-quotes?region=JP&symbols=${part.join(",")}`;
+
+      const res = await fetch(url,{
+        headers:{
+          "x-rapidapi-key":API_KEY,
+          "x-rapidapi-host":API_HOST
+        }
+      });
+
+      const json = await res.json();
+      const list = json.quoteResponse?.result || [];
+
+      for(const d of list){
+
+        if(d.regularMarketChangePercent < 2) continue;
+
+        const avgVol = await fetchAvgVolume(d.symbol);
+        if(!avgVol) continue;
+
+        const spike = d.regularMarketVolume / avgVol;
+
+        if(spike >= 2){
+
+          rockets.push({
+            symbol: d.symbol,
+            name: d.longName || d.shortName || "-",
+            price: d.regularMarketPrice,
+            change: d.regularMarketChangePercent,
+            spike: spike
+          });
+
+        }
+
+      }
+
+    }catch(e){
+      console.error(e);
+    }
+
+  }
+
+  if(rockets.length===0){
+    rocketArea.innerHTML="ロケット候補なし";
+    return;
+  }
+
+  rockets.sort((a,b)=>b.spike-a.spike);
+
+  rocketArea.innerHTML = "";
+
+  rockets.forEach(r=>{
+    rocketArea.innerHTML +=
+      `🚀 ${r.symbol} ${r.name}  
+価格:${r.price}  
+前日比:${r.change.toFixed(2)}%  
+出来高倍率:${r.spike.toFixed(2)}倍  
+---------------------<br>`;
+  });
+
+};
