@@ -201,7 +201,11 @@ const d = j.quoteResponse.result[0];
 if(!d) return null;
 
 return{
-  name: d.longName || d.shortName || symbol,
+  name:
+  d.longName ||
+  d.shortName ||
+  d.displayName ||
+  symbol,
   price: d.regularMarketPrice,
   change: d.regularMarketChangePercent,
   raw:{
