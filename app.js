@@ -323,11 +323,14 @@ rocketBtn.onclick = async ()=>{
     return;
   }
 
-  // 変化率順に並び替え
-  results.sort((a,b)=>b.change-a.change);
+ // 変化率順に並び替え
+results.sort((a,b)=>b.change-a.change);
 
-  // === 表に流し込む ===
-  results.forEach(r=>{
+// ★ 上位50件に制限
+const top50 = results.slice(0,50);
+
+// === 表に流し込む ===
+top50.forEach(r=>{
 
     const row = addRow({
       code: r.symbol,
@@ -342,8 +345,8 @@ rocketBtn.onclick = async ()=>{
 
   save();
 
-  rocketArea.textContent =
-    `🚀 ${results.length} 件を表へ追加しました`;
+ rocketArea.textContent =
+  `🚀 ${top50.length} 件を表へ追加しました`;
 
 };
 /* ===========================
