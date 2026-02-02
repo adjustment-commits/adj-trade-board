@@ -186,9 +186,8 @@ headers:{
 "x-rapidapi-host": API_HOST
 }});
 
-const json = await res.json();
-const d = json?.quoteResponse?.result?.[0];
-if(!d) return null;
+const d = await res.json();
+if(!d || !d.regularMarketPrice) return null;
 
 return{
 name: d.longName || d.shortName || "-",
