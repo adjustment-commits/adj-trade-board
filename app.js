@@ -273,40 +273,39 @@ function calcStars(d){
 
 rocketBtn.onclick = async ()=>{
 
-  rocketArea.textContent="スキャン中...\n";
-  const results=[];
-  const CHUNK=50;
+  rocketArea.textContent = "スキャン中...\n";
+  const results = [];
+  const CHUNK = 50;
 
   for(let i=0;i<LOW_PRICE_LIST.length;i+=CHUNK){
 
-    const part=LOW_PRICE_LIST.slice(i,i+CHUNK);
+    const part = LOW_PRICE_LIST.slice(i,i+CHUNK);
 
     try{
-      const url=`https://${API_HOST}/market/get-quotes?region=JP&symbols=${part.join(",")}`;
+      const url = `https://${API_HOST}/market/get-quotes?region=JP&symbols=${part.join(",")}`;
 
-      const res=await fetch(url,{
+      const res = await fetch(url,{
         headers:{
-          "x-rapidapi-key":API_KEY,
-          "x-rapidapi-host":API_HOST
+          "x-rapidapi-key": API_KEY,
+          "x-rapidapi-host": API_HOST
         }
       });
 
-      const json=await res.json();
-      const list=json.quoteResponse?.result||[];
+      const json = await res.json();
+      const list = json.quoteResponse?.result || [];
 
       list.forEach(d=>{
 
         if(
-          d.regularMarketPrice<=500 &&
-          d.regularMarketChangePercent>=2 &&
-          d.regularMarketVolume>=1000000
+          d.regularMarketPrice <= 500 &&
+          d.regularMarketChangePercent >= 2 &&
+          d.regularMarketVolume >= 1000000
         ){
           results.push({
-            symbol:d.symbol,
-            name:d.longName||d.shortName||"",
-            price:d.regularMarketPrice,
-            change:d.regularMarketChangePercent,
-            stars: calcStars(d)
+            symbol: d.symbol,
+            name: d.longName || d.shortName || "",
+            price: d.regularMarketPrice.toFixed(2),
+            change: d.regularMarketChangePercent.toFixed(2)
           });
         }
 
@@ -317,24 +316,34 @@ rocketBtn.onclick = async ()=>{
     }
   }
 
-  if(results.length===0){
-    rocketArea.textContent="該当なし";
+  if(results.length === 0){
+    rocketArea.textContent = "該当なし";
     return;
   }
 
+  // 変化率順に並び替え
   results.sort((a,b)=>b.change-a.change);
 
-  const filtered = results.filter(r => r.stars.length >= 4);
+  // === 表に流し込む ===
+  results.forEach(r=>{
 
-  rocketArea.innerHTML =
-    filtered.map(r =>
-      `<div class="rocketItem" data-symbol="${r.symbol}">
-        ${r.stars} ${r.symbol} | ${r.name} | ${r.price}円 | ${r.change.toFixed(2)}%
-      </div>`
-    ).join("");
+    const row = addRow({
+      code: r.symbol,
+      name: r.name,
+      price: r.price,
+      change: r.change
+    });
 
-};   // ← ★ これが超重要（onclick を閉じる）
+    judgeRow(row);
 
+  });
+
+  save();
+
+  rocketArea.textContent =
+    `🚀 ${results.length} 件を表へ追加しました`;
+
+};
 /* ===========================
    ROCKET CLICK → ADD ROW
 =========================== */
