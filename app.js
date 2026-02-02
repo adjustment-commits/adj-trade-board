@@ -184,11 +184,11 @@ if(!API_KEY){
 try{
 
 const res = await fetch(
-`https://yahoo-finance-real-time1.p.rapidapi.com/market/get-quotes?region=JP&lang=ja&symbols=${symbol}`
-   
+`https://yahoo-finance-real-time1.p.rapidapi.com/market/get-quotes?region=JP&lang=ja&symbols=${symbol}`,
 {
 method:"GET",
 headers:{
+   
 "x-rapidapi-key": API_KEY,
 "x-rapidapi-host": API_HOST
 }
