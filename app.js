@@ -300,13 +300,13 @@ rocketBtn.onclick = async ()=>{
           d.regularMarketChangePercent>=2 &&
           d.regularMarketVolume>=1000000
         ){
-         results.push({
-  symbol:d.symbol,
-  name:d.longName||d.shortName||"",
-  price:d.regularMarketPrice,
-  change:d.regularMarketChangePercent,
-  stars: calcStars(d)
-});
+          results.push({
+            symbol:d.symbol,
+            name:d.longName||d.shortName||"",
+            price:d.regularMarketPrice,
+            change:d.regularMarketChangePercent,
+            stars: calcStars(d)
+          });
         }
 
       });
@@ -323,13 +323,31 @@ rocketBtn.onclick = async ()=>{
 
   results.sort((a,b)=>b.change-a.change);
 
-const filtered = results.filter(r => r.stars.length >= 4);
+  const filtered = results.filter(r => r.stars.length >= 4);
 
-rocketArea.innerHTML =
-  filtered.map(r =>
-    `${r.stars} ${r.symbol} | ${r.name} | ${r.price}円 | ${r.change.toFixed(2)}%`
-  ).join("\n");
+  rocketArea.innerHTML =
+    filtered.map(r =>
+      `<div class="rocketItem" data-symbol="${r.symbol}">
+        ${r.stars} ${r.symbol} | ${r.name} | ${r.price}円 | ${r.change.toFixed(2)}%
+      </div>`
+    ).join("");
 
+};   // ← ★ これが超重要（onclick を閉じる）
+
+/* ===========================
+   ROCKET CLICK → ADD ROW
+=========================== */
+
+rocketArea.addEventListener("click",(e)=>{
+
+  if(!e.target.classList.contains("rocketItem")) return;
+
+  const symbol = e.target.dataset.symbol;
+
+  addRow({ code: symbol });
+  save();
+
+});
 
 /* ===========================
    ROCKET CLICK → ADD ROW
