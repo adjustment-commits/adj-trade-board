@@ -408,7 +408,7 @@ if(power.label !== "🚀-" && flow >= 20){
 }
    
 // API負荷軽減
-await new Promise(r=>setTimeout(r,150));
+await new Promise(r=>setTimeout(r,300));
 
 }
 
