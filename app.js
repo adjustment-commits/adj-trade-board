@@ -178,24 +178,31 @@ return tr;
 async function fetchStock(symbol){
 
 try{
-  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbol}`;
 
-  const res = await fetch(url);
-  const json = await res.json();
+const GAS_URL = "ここにGASのURLを貼る";
 
-  const d = json.quoteResponse?.result?.[0];
-  if(!d) return null;
+const res = await fetch(`${GAS_URL}?symbol=${symbol}`);
+const d = await res.json();
 
-  return{
-    name: d.longName || d.shortName || "-",
-    price: d.regularMarketPrice,
-    change: d.regularMarketChangePercent,
-    raw: d
-  };
+if(d.error) return null;
+
+return{
+  name: d.name,
+  price: d.price,
+  change: d.change,
+  raw:{
+    regularMarketPrice: d.price,
+    regularMarketChangePercent: d.change,
+    regularMarketVolume: d.volume,
+    regularMarketDayHigh: d.high,
+    regularMarketDayLow: d.low,
+    regularMarketOpen: d.open
+  }
+};
 
 }catch(e){
-  console.error(e);
-  return null;
+console.error(e);
+return null;
 }
 
 }
