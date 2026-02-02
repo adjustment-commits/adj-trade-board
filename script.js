@@ -293,18 +293,19 @@ scanBtn.onclick = async ()=>{
 
     if(scanMode==="short"){
       if(!(d.regularMarketPrice<=500 &&
-           d.regularMarketChangePercent>=0.1 &&
+           d.regularMarketChangePercent>=0.5 &&
            d.spike>=0.8)) continue;
     }
 
     const candles = await fetchCandles(d.symbol);
-    const avgCandle = candleAverageScore(candles);
-    const volT = volumeTrend(candles);
+const avgCandle = candleAverageScore(candles);
+const volT = volumeTrend(candles);
 
-    if(volT===0) continue;
+// 土日・API欠損対策
+const safeVolT = volT || 1;
 
-    const stars = calcStars(d,avgCandle,volT);
-
+const stars = calcStars(d,avgCandle,safeVolT);
+     
     candidates.push({
       symbol:d.symbol,
       score:stars.length
