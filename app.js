@@ -1,3 +1,5 @@
+document.addEventListener("DOMContentLoaded", () => {
+
 /* ===========================
    ELEMENTS
 =========================== */
@@ -369,4 +371,5 @@ rocketArea.addEventListener("click", async (e)=>{
   judgeRow(row);
   save();
 
+});
 });
