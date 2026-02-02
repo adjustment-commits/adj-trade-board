@@ -116,7 +116,7 @@ const tr = document.createElement("tr");
 
 tr.innerHTML = `
 <td><input class="code" value="${data.code||""}" placeholder="7203.T"></td>
-<td><input class="name" value="${data.name||""}" disabled></td>
+<td><input class="name" value="${data.name||""}"></td>
 <td><input class="price" value="${data.price||""}" disabled></td>
 <td><input class="change" value="${data.change||""}" disabled></td>
 <td class="power">${data.power||"-"}</td>
