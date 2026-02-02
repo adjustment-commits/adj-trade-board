@@ -45,10 +45,12 @@ clearBtn.onclick = () => {
 ------------------- */
 
 function addRow(data={}){
+
   const tr=document.createElement("tr");
 
   tr.innerHTML=`
-    <td><input class="symbol" value="${data.symbol||""}"></td>
+    <td><input class="code" value="${data.code||""}"></td>
+    <td><input class="name" value="${data.name||""}"></td>
     <td><input class="price" value="${data.price||""}"></td>
     <td><input class="change" value="${data.change||""}"></td>
     <td class="status">-</td>
@@ -68,8 +70,13 @@ function addRow(data={}){
 ------------------- */
 
 function calculate(){
+
   document.querySelectorAll("#board tr").forEach(row=>{
-    const change=parseFloat(row.querySelector(".change").value);
+
+    const change = parseFloat(
+      row.querySelector(".change").value
+    );
+
     row.className="";
 
     if(isNaN(change)) return;
@@ -87,6 +94,7 @@ function calculate(){
       row.querySelector(".status").textContent="🫷";
     }
   });
+
 }
 
 /* -------------------
@@ -94,10 +102,15 @@ function calculate(){
 ------------------- */
 
 function save(){
-  const data=[...document.querySelectorAll("#board tr")].map(row=>({
-    symbol:row.querySelector(".symbol").value,
-    price:row.querySelector(".price").value,
-    change:row.querySelector(".change").value
+
+  const data=[...document.querySelectorAll("#board tr")]
+  .map(row=>({
+
+    code: row.querySelector(".code").value,
+    name: row.querySelector(".name").value,
+    price: row.querySelector(".price").value,
+    change: row.querySelector(".change").value
+
   }));
 
   localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
@@ -108,6 +121,10 @@ function save(){
 ------------------- */
 
 function load(){
-  const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+
+  const saved=JSON.parse(
+    localStorage.getItem(STORAGE_KEY)||"[]"
+  );
+
   saved.forEach(d=>addRow(d));
 }
