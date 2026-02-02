@@ -143,7 +143,9 @@ tr.querySelector(".name").value = data.name;
 tr.querySelector(".price").value = data.price.toFixed(2);
 tr.querySelector(".change").value = data.change.toFixed(2);
 tr.querySelector(".power").textContent = power.label;
-tr.querySelector(".flow").textContent = flow;
+const flowCell = tr.querySelector(".flow");
+flowCell.textContent = flow;
+applyFlowColor(flowCell, flow);
 
 judgeRow(tr);
 save();
@@ -210,7 +212,9 @@ row.querySelector(".name").value = data.name;
 row.querySelector(".price").value = data.price.toFixed(2);
 row.querySelector(".change").value = data.change.toFixed(2);
 row.querySelector(".power").textContent = power.label;
-     row.querySelector(".flow").textContent = flow;
+const flowCell = row.querySelector(".flow");
+flowCell.textContent = flow;
+applyFlowColor(flowCell, flow);
 
 judgeRow(row);
   }
@@ -274,7 +278,9 @@ function load(){
     row.querySelector(".power").textContent = d.power;
   }
 if(d.flow){
-  row.querySelector(".flow").textContent = d.flow;
+  const flowCell = row.querySelector(".flow");
+  flowCell.textContent = d.flow;
+  applyFlowColor(flowCell, Number(d.flow));
 }
 });
 }
@@ -498,6 +504,24 @@ function calcFlowScore(d){
   if(price >= high * 0.99) score += 20;
 
   return score;
+}
+
+/* ===========================
+   FLOW COLOR
+=========================== */
+
+function applyFlowColor(cell, score){
+
+  let color = "#555"; // default
+
+  if(score >= 80) color = "#ff3b30";      // red
+  else if(score >= 60) color = "#ff9500"; // orange
+  else if(score >= 40) color = "#34c759"; // green
+  else if(score >= 20) color = "#0a84ff"; // blue
+
+  cell.style.backgroundColor = color;
+  cell.style.color = "#fff";
+  cell.style.fontWeight = "700";
 }
    
 });
