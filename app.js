@@ -248,19 +248,25 @@ function save(){
 
   const data=[...document.querySelectorAll("#board tr")]
   .map(r=>({
-    code:r.querySelector(".code").value,
-    name:r.querySelector(".name").value,
-    price:r.querySelector(".price").value,
-    change:r.querySelector(".change").value
-  }));
-
+  code:r.querySelector(".code").value,
+  name:r.querySelector(".name").value,
+  price:r.querySelector(".price").value,
+  change:r.querySelector(".change").value,
+  power:r.querySelector(".power").textContent
+}));
+   
   localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
 }
 
 function load(){
 
   const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
-  saved.forEach(d=>addRow(d));
+ saved.forEach(d=>{
+  const row = addRow(d);
+  if(d.power){
+    row.querySelector(".power").textContent = d.power;
+  }
+});
 }
 
 function calcStars(d){
@@ -391,13 +397,19 @@ rocketArea.addEventListener("click", async (e)=>{
 =========================== */   
 function judgeRocketPower(d){
 
-  let score = 0;
-  let reasons = [];
+  if(!d) return {label:"-", score:0, reasons:[]};
 
   const price = d.regularMarketPrice;
   const open  = d.regularMarketOpen;
   const high  = d.regularMarketDayHigh;
   const low   = d.regularMarketDayLow;
+
+  if(price==null || open==null || high==null || low==null){
+    return {label:"-", score:0, reasons:[]};
+  }
+
+  let score = 0;
+  let reasons = [];
 
   const upperWick = high - price;
   const body = Math.abs(price - open);
