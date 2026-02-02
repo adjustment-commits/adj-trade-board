@@ -174,7 +174,11 @@ return tr;
 /* ===========================
    FETCH
 =========================== */
-
+if(!API_KEY){
+  alert("APIキーが未設定です");
+  return null;
+}
+   
 async function fetchStock(symbol){
 
 try{
