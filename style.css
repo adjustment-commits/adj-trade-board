@@ -197,3 +197,34 @@ tr.wait input{
     padding:6px 10px;
   }
 }
+
+/* ===========================
+   ADDITIONAL FOR FLOW & DELTA
+=========================== */
+
+/* 勢い(FLOW)とΔ勢いの共通スタイル */
+.flow, .delta {
+  font-weight: 700;
+  border-radius: 4px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  min-width: 45px;
+}
+
+/* Δ勢い専用：急増時の点滅アニメーション */
+@keyframes blink {
+  from { opacity: 1.0; filter: brightness(1.5); box-shadow: 0 0 10px #ff3b30; }
+  to { opacity: 0.6; filter: brightness(0.8); box-shadow: none; }
+}
+
+/* ⭐（スター）の装飾 */
+.star {
+  color: #fbbf24; /* 黄色・アンバー */
+  font-size: 16px;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+}
+
+/* 行のホバー効果（視認性アップ） */
+tr:hover {
+  filter: brightness(1.2);
+  transition: 0.2s;
+}
