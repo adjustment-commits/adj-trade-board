@@ -137,29 +137,24 @@ return tr;
 async function fetchStock(symbol){
 
 try{
+  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbol}`;
 
-const url = `https://${API_HOST}/stock/get-quote?symbol=${symbol}`;
+  const res = await fetch(url);
+  const json = await res.json();
 
-const res = await fetch(url,{
-headers:{
-"x-rapidapi-key": API_KEY,
-"x-rapidapi-host": API_HOST
-}});
+  const d = json.quoteResponse?.result?.[0];
+  if(!d) return null;
 
-const json = await res.json();
-const d = json?.quote;
-if(!d) return null;
-
-return{
-name: d.longName || d.shortName || "-",
-price: d.regularMarketPrice,
-change: d.regularMarketChangePercent,
-raw: d
-};
+  return{
+    name: d.longName || d.shortName || "-",
+    price: d.regularMarketPrice,
+    change: d.regularMarketChangePercent,
+    raw: d
+  };
 
 }catch(e){
-console.error(e);
-return null;
+  console.error(e);
+  return null;
 }
 
 }
